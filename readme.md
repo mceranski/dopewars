@@ -1,13 +1,4 @@
-To do list:
-
-Buy a bigger trenchcoat
-
-Finish bank
-Withdraw
-Deposit
-
-Loan Shark
-Pay all
+<a href="https://mceranski.github.io/dopewars/" target="_blank">Live Demo</a>
 
 Build a docker container
 Production: sudo docker build -t dopewars-prod .
