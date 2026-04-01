@@ -1,0 +1,54 @@
+@use 'bulma/sass';
+
+html[data-theme='light'] {
+  body {
+    background-color: #f8f8f8;
+  }
+
+  .log-entry-default {
+    color: black;
+  }
+}
+
+html[data-theme='dark'] {
+  .log-entry-default {
+    color: white;
+  }
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.status-indicators .button {
+  padding-left: 0px !important;
+  padding-right: 25px !important;
+  border: none !important;
+}
+
+.status-indicators .button:hover {
+  background: transparent !important;
+}
+
+.map-container {
+  height: 285px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.drug-table input {
+  width: 75px;
+}
+
+.drug-table thead th {
+  white-space: nowrap !important;
+  text-align: center;
+}
+
+.action-button {
+  width: 100px;
+}
+
+.jet-button {
+  width: 130px;
+}
