@@ -143,7 +143,7 @@ function useGame() {
 
   const playSound = (name) => {
     if (!hasUserInteracted.value || muted.value) return; // Don't play sound if user hasn't interacted with the page or if muted
-    const audio = new Audio(`/sounds/${name}.mp3`); // Replace with the actual path to your sound file
+    const audio = new Audio(`sounds/${name}.mp3`); // Replace with the actual path to your sound file
     audio.play();
   }
 
