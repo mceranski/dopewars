@@ -9,10 +9,8 @@ import { ViewService } from './ViewService.js';
 function useGame() {
   const maxDays = 31;
   const highScoresKey = 'dopewars.highScores';
-  const highScoresKey = 'dopewars.highScores';
   const startDate = new Date("December 1, 1984");
   const locations = Location.All;
-  const highScores = ref(loadHighScores());
   const highScores = ref(loadHighScores());
   const date = ref(new Date(startDate));
   const daysRemaining = ref(maxDays);
