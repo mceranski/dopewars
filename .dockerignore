@@ -1,0 +1,4 @@
+# .dockerignore
+node_modules
+dist
+# ...other files like .env.development, etc.
