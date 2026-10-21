@@ -55,8 +55,22 @@ export class Drug {
     new Drug({ name: "Weed", minPrice: 315, maxPrice: 890, canBeExtraCheap: true, canBeExtraExpensive: false })
   ];
 
-  static getRandomDrugs({ min = 3, max = 8 }) {
-    var items = random.elements(Drug.all, min, max)
+  static getRandomDrugs({ min = 3, max = 8, preferredNames = [] }) {
+    var count = random.number(min, max || Drug.all.length);
+    var remaining = [...Drug.all];
+    var preferred = new Set(preferredNames);
+    var items = [];
+
+    for (var i = 0; i < count; i++) {
+      var totalWeight = remaining.reduce((total, drug) => total + (preferred.has(drug.name) ? 3 : 1), 0);
+      var selection = Math.random() * totalWeight;
+      var index = remaining.findIndex(drug => {
+        selection -= preferred.has(drug.name) ? 3 : 1;
+        return selection < 0;
+      });
+      items.push(remaining.splice(index, 1)[0]);
+    }
+
     items.forEach(x => x.randomizePrice());
     return items.sort((a, b) => a.name.localeCompare(b.name)); //sort by name
   }

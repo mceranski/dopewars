@@ -8,8 +8,10 @@ import { ViewService } from './ViewService.js';
 
 function useGame() {
   const maxDays = 31;
+  const highScoresKey = 'dopewars.highScores';
   const startDate = new Date("December 1, 1984");
   const locations = Location.All;
+  const highScores = ref(loadHighScores());
   const date = ref(new Date(startDate));
   const daysRemaining = ref(maxDays);
   const hasUserInteracted = ref(false);
@@ -20,6 +22,7 @@ function useGame() {
   const log = new Log(10);
   const muted = ref(true);
   const player = ref(null);
+  const purchasedDrugs = new Set();
   var resolver = null;
   const view = ref(ViewService.DrugDeal);
 
@@ -29,6 +32,7 @@ function useGame() {
     lastCopEncounter.value = null;
     copEncounters.value = 0;
     daysRemaining.value = maxDays;
+    purchasedDrugs.clear();
     log.clear();
     resolver = null; // Initialize resolver for async operations
     var playerName = player.value?.name || "Player 1";
@@ -103,15 +107,58 @@ function useGame() {
   }
 
   const over = (reason) => {
+    if (isOver.value) return;
+
     closeView(); // Close any open views when the game is over
     log.fatal(reason);
+    saveHighScore();
     isOver.value = true;
     startView(ViewService.GameOver);
+  }
+
+  function loadHighScores() {
+    try {
+      const scores = JSON.parse(localStorage.getItem(highScoresKey) || '[]');
+      if (!Array.isArray(scores)) return [];
+      return scores
+        .filter(item => typeof item?.name === 'string' && Number.isFinite(item.score))
+        .sort((first, second) => second.score - first.score)
+        .slice(0, 10);
+    }
+    catch {
+      return [];
+    }
+  }
+
+  const saveHighScore = () => {
+    const name = player.value.name.trim() || 'Player 1';
+    const score = player.value.profit;
+    const existingScore = highScores.value.find(item => item.name.toLowerCase() === name.toLowerCase());
+
+    if (existingScore && existingScore.score >= score) return;
+
+    highScores.value = [
+      ...highScores.value.filter(item => item.name.toLowerCase() !== name.toLowerCase()),
+      { name, score }
+    ].sort((first, second) => second.score - first.score).slice(0, 10);
+
+    try {
+      localStorage.setItem(highScoresKey, JSON.stringify(highScores.value));
+    }
+    catch {
+      // Keep the in-memory leaderboard available if browser storage is unavailable.
+    }
   }
 
   const getRandomSongName = () => random.element(songNames);
   const getRandomSubwaySaying = () => random.element(subwaySayings);
   const getRandomStopToDo = () => random.element(stopToDos);
+  const recordDrugPurchase = (name) => purchasedDrugs.add(name);
+  const consumePurchasedDrugs = () => {
+    const names = [...purchasedDrugs];
+    purchasedDrugs.clear();
+    return names;
+  }
 
   const incrementDate = async (days = 1) => {
     date.value.setDate(date.value.getDate() + days);
@@ -167,6 +214,7 @@ function useGame() {
     date,
     daysRemaining,
     hasUserInteracted,
+    highScores,
     isOver,
     canJet,
     jet,
@@ -175,6 +223,8 @@ function useGame() {
     log,
     playSound,
     muted,
+    recordDrugPurchase,
+    consumePurchasedDrugs,
     over,
     player,
     reset,

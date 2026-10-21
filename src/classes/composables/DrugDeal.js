@@ -12,6 +12,7 @@ function useDrugDeal({ game, options }) {
 
   const buyDrugs = ({ name, price, quantity = 1 }) => {
     player.buyDrugs({ name, price, quantity });
+    game.recordDrugPurchase(name);
     updateDrugs(false);
   }
 
@@ -41,7 +42,7 @@ function useDrugDeal({ game, options }) {
 
   const updateDrugs = (repopulate = true) => {
     if (repopulate)
-      availableDrugs.value = Drug.getRandomDrugs({ min: 3, max: 8 });
+      availableDrugs.value = Drug.getRandomDrugs({ min: 3, max: 8, preferredNames: game.consumePurchasedDrugs() });
 
     availableDrugs.value.forEach(drug => {
       if (repopulate) {
