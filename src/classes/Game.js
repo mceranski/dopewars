@@ -9,8 +9,10 @@ import { ViewService } from './ViewService.js';
 function useGame() {
   const maxDays = 31;
   const highScoresKey = 'dopewars.highScores';
+  const highScoresKey = 'dopewars.highScores';
   const startDate = new Date("December 1, 1984");
   const locations = Location.All;
+  const highScores = ref(loadHighScores());
   const highScores = ref(loadHighScores());
   const date = ref(new Date(startDate));
   const daysRemaining = ref(maxDays);
@@ -109,8 +111,11 @@ function useGame() {
   const over = (reason) => {
     if (isOver.value) return;
 
+    if (isOver.value) return;
+
     closeView(); // Close any open views when the game is over
     log.fatal(reason);
+    saveHighScore();
     saveHighScore();
     isOver.value = true;
     startView(ViewService.GameOver);
@@ -214,6 +219,7 @@ function useGame() {
     date,
     daysRemaining,
     hasUserInteracted,
+    highScores,
     highScores,
     isOver,
     canJet,
