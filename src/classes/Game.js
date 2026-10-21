@@ -8,8 +8,10 @@ import { ViewService } from './ViewService.js';
 
 function useGame() {
   const maxDays = 31;
+  const highScoresKey = 'dopewars.highScores';
   const startDate = new Date("December 1, 1984");
   const locations = Location.All;
+  const highScores = ref(loadHighScores());
   const date = ref(new Date(startDate));
   const daysRemaining = ref(maxDays);
   const hasUserInteracted = ref(false);
@@ -103,10 +105,47 @@ function useGame() {
   }
 
   const over = (reason) => {
+    if (isOver.value) return;
+
     closeView(); // Close any open views when the game is over
     log.fatal(reason);
+    saveHighScore();
     isOver.value = true;
     startView(ViewService.GameOver);
+  }
+
+  function loadHighScores() {
+    try {
+      const scores = JSON.parse(localStorage.getItem(highScoresKey) || '[]');
+      if (!Array.isArray(scores)) return [];
+      return scores
+        .filter(item => typeof item?.name === 'string' && Number.isFinite(item.score))
+        .sort((first, second) => second.score - first.score)
+        .slice(0, 10);
+    }
+    catch {
+      return [];
+    }
+  }
+
+  const saveHighScore = () => {
+    const name = player.value.name.value.trim() || 'Player 1';
+    const score = player.value.profit.value;
+    const existingScore = highScores.value.find(item => item.name.toLowerCase() === name.toLowerCase());
+
+    if (existingScore && existingScore.score >= score) return;
+
+    highScores.value = [
+      ...highScores.value.filter(item => item.name.toLowerCase() !== name.toLowerCase()),
+      { name, score }
+    ].sort((first, second) => second.score - first.score).slice(0, 10);
+
+    try {
+      localStorage.setItem(highScoresKey, JSON.stringify(highScores.value));
+    }
+    catch {
+      // Keep the in-memory leaderboard available if browser storage is unavailable.
+    }
   }
 
   const getRandomSongName = () => random.element(songNames);
@@ -167,6 +206,7 @@ function useGame() {
     date,
     daysRemaining,
     hasUserInteracted,
+    highScores,
     isOver,
     canJet,
     jet,

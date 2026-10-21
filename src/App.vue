@@ -8,6 +8,7 @@ import RandomEventView from './views/RandomEvent.vue';
 import GameOverView from './views/GameOver.vue';
 import DebugView from './views/DebugWindow.vue';
 import LogControl from './components/LogControl.vue';
+import HighScores from './components/HighScores.vue';
 
 import { ViewService } from './classes/ViewService';
 import { ref, onMounted } from 'vue';
@@ -73,6 +74,8 @@ onMounted(init);
     </div>
 
     <debug-view v-model="game" v-if="debug"></debug-view>
+
+    <high-scores v-if="!game.isOver" :scores="game.highScores"></high-scores>
 
     <div class="columns mb-1">
       <div class="column">
