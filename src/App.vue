@@ -11,7 +11,7 @@ import LogControl from './components/LogControl.vue';
 import HighScores from './components/HighScores.vue';
 
 import { ViewService } from './classes/ViewService';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { LMap, LTileLayer, LMarker, LTooltip } from '@vue-leaflet/vue-leaflet';
 import { format } from './classes/Utils.js';
 import { useGame } from './classes/Game.js';
@@ -21,11 +21,21 @@ const zoom = ref(15);
 const environment = ref(import.meta.env);
 const theme = ref('light');
 const debug = ref(false);
+const showHighScores = ref(true);
+
+watch(() => game.value.isOver, () => {
+  showHighScores.value = true;
+});
 
 const toggleTheme = () => {
   theme.value = theme.value === 'light' ? 'dark' : 'light';
   document.documentElement.setAttribute('data-theme', theme.value);
   localStorage.setItem('theme', theme.value);
+}
+
+const restartGame = () => {
+  game.value.reset();
+  showHighScores.value = true;
 }
 
 function init() {
@@ -55,6 +65,11 @@ onMounted(init);
             </button>
           </p>
           <p class="control">
+            <button type="button" class="button" title="High Scores" :aria-expanded="showHighScores" @click="showHighScores = !showHighScores">
+              <font-awesome-icon :icon="['fas', 'trophy']" />
+            </button>
+          </p>
+          <p class="control">
             <button type="button" class="button" @click="toggleTheme()" title="Toggle Light/Dark Theme">
               <font-awesome-icon :icon="['fas', theme === 'light' ? 'sun' : 'moon']" />
             </button>
@@ -65,7 +80,7 @@ onMounted(init);
             </button>
           </p>
           <p class="control">
-            <button type="button" class="button" @click="game.reset()" title="Restart">
+            <button type="button" class="button" @click="restartGame()" title="Restart">
               <font-awesome-icon :icon="['fas', 'rotate']" />
             </button>
           </p>
@@ -75,7 +90,7 @@ onMounted(init);
 
     <debug-view v-model="game" v-if="debug"></debug-view>
 
-    <high-scores v-if="!game.isOver" :scores="game.highScores"></high-scores>
+    <high-scores v-if="showHighScores" :scores="game.highScores"></high-scores>
 
     <div class="columns mb-1">
       <div class="column">

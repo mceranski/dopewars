@@ -1,6 +1,5 @@
 <script setup>
 import { format } from '@/classes/Utils.js';
-import HighScores from '@/components/HighScores.vue';
 const model = defineModel();
 </script>
 
@@ -18,8 +17,6 @@ const model = defineModel();
       <span>{{ ` You made a net profit of $${format.number(model.profit)}!` }}</span>
     </p>
   </div>
-
-  <high-scores :scores="model.highScores"></high-scores>
 
   <button class="button is-primary mt-4" @click="model.restartGame()">Play Again</button>
 </div>
