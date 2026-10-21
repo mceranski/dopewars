@@ -1,6 +1,0 @@
-# .dockerignore
-node_modules
-dist
-assets
-sounds
-# ...other files like .env.development, etc.
